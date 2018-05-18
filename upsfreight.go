@@ -250,7 +250,13 @@ func (prd *PickupRequestDetails) RequestPickup() (responseData PickupRequestResp
 	}
 
 	//make the call the UPS
-	res, err := http.Post(upsURL, "application/json", bytes.NewReader(jsonBytes))
+	//set a timeout since golang doesn't set one by default
+	//we don't want this call to hang for too long
+	timeout := time.Duration(7 * time.Second)
+	httpClient := http.Client{
+		Timeout: timeout,
+	}
+	res, err := httpClient.Post(upsURL, "application/json", bytes.NewReader(jsonBytes))
 	if err != nil {
 		errors.Wrap(err, "upsfreight.RequestPickup - could not make post request")
 		return
