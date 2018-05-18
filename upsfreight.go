@@ -154,7 +154,7 @@ type PickupRequestError struct {
 		FaultString string `json:"faultstring"`
 		Detail      struct {
 			Errors struct {
-				ErrorDetail []errorDetail
+				ErrorDetail errorDetail
 			}
 		} `json:"detail"`
 	}
@@ -280,11 +280,14 @@ func (prd *PickupRequestDetails) RequestPickup() (responseData PickupRequestResp
 	//if not, reread the response data and log it
 	if responseData.FreightPickupResponse.PickupRequestConfirmationNumber == "" {
 		log.Println("upsfreight.RequestPickup - pickup request failed")
+		log.Println(string(body))
 
-		var errorData map[string]interface{}
+		var errorData PickupRequestError
 		json.Unmarshal(body, &errorData)
-		log.Printf("%+v", errorData)
+
+		//return our error so we know where this error came from, and UPS error message so we know what to fix
 		err = errors.New("upsfreight.RequestPickup - pickup request failed")
+		err = errors.Wrap(err, errorData.Fault.Detail.Errors.ErrorDetail.PrimaryErrorCode.Description)
 		return
 	}
 
