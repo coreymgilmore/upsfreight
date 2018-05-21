@@ -33,6 +33,11 @@ const (
 //when actually needed.
 var upsURL = upsTestURL
 
+//timeout is the default time we should wait for a reply from UPS
+//You may need to adjust this based on how slow connecting to UPS is for you.
+//10 seconds is overly long, but sometimes UPS is very slow.
+var timeout = time.Duration(10 * time.Second)
+
 //PickupRequest is the main container struct for data sent to UPS to request a pickup
 //This format, and children types, was determined from UPS API documentation.
 type PickupRequest struct {
@@ -193,6 +198,13 @@ func SetProductionMode(yes bool) {
 	return
 }
 
+//SetTimeout updates the timeout value to something the user sets
+//use this to increase the timeout if connecting to UPS is really slow
+func SetTimeout(seconds time.Duration) {
+	timeout = time.Duration(seconds * time.Second)
+	return
+}
+
 //SetCustomerContext saves the unique identifier for this request to the request details
 func (prd *PickupRequestDetails) SetCustomerContext(c string) {
 	prd.Request.TransactionReference.CustomerContext = c
@@ -252,7 +264,6 @@ func (prd *PickupRequestDetails) RequestPickup() (responseData PickupRequestResp
 	//make the call the UPS
 	//set a timeout since golang doesn't set one by default
 	//we don't want this call to hang for too long
-	timeout := time.Duration(7 * time.Second)
 	httpClient := http.Client{
 		Timeout: timeout,
 	}
