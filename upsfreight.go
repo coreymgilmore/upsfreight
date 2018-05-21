@@ -5,9 +5,20 @@ documentation.  This uses UPS's JSON API.
 You will need to have a UPS account and register for API access to use this code.
 
 Currently this package can perform:
-	- pickup requests
-*/
+- pickup requests
 
+To create a pickup request:
+- Set your UPS credentials (SetCredentials()).
+- Set test or production mode (SetProductionMode()).
+- Set the packaging type (PackagingType{}).
+- Set the weight of the goods (Weight{}).
+- Create the shipment details (ShipmentDetail{}).
+- Create the pickup details (PickupRequestDetails{}).
+- Set a unique identifier for the pickup request (SetCustomerContext()).
+- Set the timeframe for the pickup (SetPickupSchedule()).
+- Request the pickup (RequestPickup()).
+- Check for any errors.
+*/
 package upsfreight
 
 import (
