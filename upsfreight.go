@@ -242,7 +242,7 @@ func (prd *PickupRequestDetails) SetPickupSchedule(startTime, endTime time.Time)
 
 	//make sure end time is after start time
 	//ups also requires a 2 hour window
-	if startTime.Sub(now) < time.Hour*2 {
+	if endTime.Sub(startTime) < time.Hour*2 {
 		return errors.New("upsfreight.SetPickupSchedule - endTime must be at least 2 hours after start time")
 	}
 
